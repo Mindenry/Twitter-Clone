@@ -1,5 +1,7 @@
 # 🚀 Twitter Clone
 
+[Click here to visit the Twitter Clone project](https://mindenry.github.io/Twitter-Clone/)
+
 A modern and responsive **Twitter Clone** built using **HTML, CSS, and JavaScript**. This project replicates the core UI/UX of Twitter with an interactive and visually appealing design. The goal is to create a seamless user experience while implementing key frontend web development concepts.
 
 ## ✨ Features
