@@ -1,11 +1,10 @@
 # 🚀 **Twitter Clone** 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MINDENRY)
 [![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](https://github.com/mindenry/Twitter-Clone)
 [![Open in GitHub Pages](https://img.shields.io/badge/Open%20in-GitHub%20Pages-9cf.svg)](https://mindenry.github.io/Twitter-Clone/)
 
 A modern and **responsive** **Twitter Clone** built using **HTML, CSS, and JavaScript**. This project replicates the core UI/UX of Twitter with an interactive and visually appealing design, focusing on creating a **seamless user experience** while implementing key **frontend web development concepts**.
 
-![Twitter Clone Preview](https://your-image-link-here.com/preview.png)
 
 ## ✨ **Features**  
 
@@ -60,7 +59,7 @@ Twitter-Clone/
 Contributions are welcome! Feel free to submit pull requests or report issues.
 
 ## 📜 License
-This project is open-source and available under the **MIT License**.
+This project is open-source and available under the **MINDENRY License**.
 
 ---
 
