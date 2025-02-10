@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Twitter Clone - Enhanced</title>
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <!-- Left Sidebar -->
+            <div class="sidebar-left">
+                <div class="logo">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <nav>
+                    <ul class="nav-menu">
+                        <li id="nav-home" class="nav-item active">
+                            <i class="fas fa-home"></i>
+                            <span>หน้าแรก</span>
+                        </li>
+                        <li id="nav-explore" class="nav-item">
+                            <i class="fas fa-hashtag"></i>
+                            <span>สำรวจ</span>
+                        </li>
+                        <li id="nav-notifications" class="nav-item">
+                            <i class="far fa-bell"></i>
+                            <span>การแจ้งเตือน</span>
+                        </li>
+                        <li id="nav-profile" class="nav-item">
+                            <i class="far fa-user"></i>
+                            <span>โปรไฟล์</span>
+                        </li>
+                    </ul>
+                </nav>
+                <button class="tweet-btn">
+                    <i class="fas fa-feather-alt"></i>
+                    <span>ทวีต</span>
+                </button>
+            </div>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div id="homeSection">
+                    <div class="header"><h2>หน้าแรก</h2></div>
+                    <div class="tweet-feed">
+                        <!-- เนื้อหาทวีต -->
+                    </div>
+                </div>
+
+                <div id="exploreSection" style="display: none;">
+                    <div class="header"><h2>สำรวจ</h2></div>
+                    <div class="explore-section">
+                        <!-- เนื้อหาสำรวจ -->
+                    </div>
+                </div>
+
+                <div id="notificationsSection" style="display: none;">
+                    <div class="header"><h2>การแจ้งเตือน</h2></div>
+                    <div class="notifications-container">
+                        <!-- เนื้อหาการแจ้งเตือน -->
+                    </div>
+                </div>
+
+                <div id="profileSection" style="display: none;">
+                    <div class="header"><h2>โปรไฟล์</h2></div>
+                    <div class="profile-content">
+                        <!-- เนื้อหาโปรไฟล์ -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar -->
+            <div class="sidebar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="ค้นหาใน Twitter">
+                </div>
+
+                <div class="trends">
+                    <div class="trends-header">เทรนด์สำหรับคุณ</div>
+                    <!-- Trend items will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
