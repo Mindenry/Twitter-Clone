@@ -18,15 +18,11 @@ A modern and responsive **Twitter Clone** built using **HTML, CSS, and JavaScrip
 - **CSS3** – Styling with Flexbox, Grid, and animations.
 - **JavaScript (Vanilla JS)** – Interactive features and state management.
 
-## 📸 Preview
-
-![Twitter Clone Preview](https://via.placeholder.com/1200x600.png?text=Project+Preview)
-
 ## 🚀 Getting Started
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-username/Twitter-Clone.git
+git clone https://github.com/mindenry/Twitter-Clone.git
 cd Twitter-Clone
 ```
 
