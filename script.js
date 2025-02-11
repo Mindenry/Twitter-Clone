@@ -650,3 +650,397 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+class ProfileManager {
+  constructor() {
+    this.currentUser = this.loadUserData() || this.createDefaultUser();
+    this.initializeElements();
+    this.setupEventListeners();
+    this.updateProfileUI();
+  }
+
+  createDefaultUser() {
+    return {
+      name: "ผู้ใช้ตัวอย่าง",
+      username: "example_user",
+      bio: "ยินดีต้อนรับสู่โปรไฟล์ของฉัน",
+      location: "กรุงเทพมหานคร",
+      joinDate: new Date().toISOString(),
+      followers: 0,
+      following: 0,
+      avatarUrl: null,
+      bannerUrl: null,
+      tweets: [],
+      likes: [],
+      media: [],
+      replies: [],
+    };
+  }
+
+  loadUserData() {
+    const userData = localStorage.getItem("userData");
+    return userData ? JSON.parse(userData) : null;
+  }
+
+  saveUserData() {
+    localStorage.setItem("userData", JSON.stringify(this.currentUser));
+  }
+
+  initializeElements() {
+    // Profile elements
+    this.profileBanner = document.getElementById("profileBanner");
+    this.profileAvatar = document.getElementById("profileAvatar");
+    this.displayName = document.getElementById("displayName");
+    this.username = document.getElementById("username");
+    this.userBio = document.getElementById("userBio");
+    this.userLocation = document.getElementById("userLocation");
+    this.joinDate = document.getElementById("joinDate");
+    this.followingCount = document.getElementById("followingCount");
+    this.followersCount = document.getElementById("followersCount");
+
+    // Content tabs
+    this.contentTabs = document.querySelectorAll(".profile-content-tabs .tab");
+    this.userTweets = document.getElementById("userTweets");
+
+    // Edit profile elements
+    this.editProfileBtn = document.getElementById("editProfileBtn");
+    this.editProfileModal = document.getElementById("editProfileModal");
+    this.editProfileForm = document.getElementById("editProfileForm");
+
+    // File inputs
+    this.avatarInput = document.getElementById("avatarInput");
+    this.bannerInput = document.getElementById("bannerInput");
+  }
+
+  setupEventListeners() {
+    // Profile edit button
+    this.editProfileBtn.addEventListener("click", () =>
+      this.openEditProfileModal()
+    );
+
+    // File input handlers
+    this.avatarInput.addEventListener("change", (e) =>
+      this.handleImageUpload(e, "avatar")
+    );
+    this.bannerInput.addEventListener("change", (e) =>
+      this.handleImageUpload(e, "banner")
+    );
+
+    // Edit profile form
+    this.editProfileForm.addEventListener("submit", (e) =>
+      this.handleProfileUpdate(e)
+    );
+
+    // Content tabs
+    this.contentTabs.forEach((tab) => {
+      tab.addEventListener("click", () => this.switchTab(tab));
+    });
+
+    // Character counters for edit form
+    const textInputs = this.editProfileForm.querySelectorAll(
+      'input[type="text"], textarea'
+    );
+    textInputs.forEach((input) => {
+      input.addEventListener("input", () => this.updateCharacterCount(input));
+    });
+
+    // Close modal button
+    const closeModalBtn = this.editProfileModal.querySelector(".close-modal");
+    closeModalBtn.addEventListener("click", () => this.closeEditProfileModal());
+  }
+
+  updateProfileUI() {
+    // Update profile images
+    if (this.currentUser.avatarUrl) {
+      this.profileAvatar.src = this.currentUser.avatarUrl;
+    }
+    if (this.currentUser.bannerUrl) {
+      this.profileBanner.src = this.currentUser.bannerUrl;
+    }
+
+    // Update text content
+    this.displayName.textContent = this.currentUser.name;
+    this.username.textContent = `@${this.currentUser.username}`;
+    this.userBio.textContent =
+      this.currentUser.bio || "ยังไม่ได้เพิ่มชีวประวัติ";
+    this.userLocation.textContent =
+      this.currentUser.location || "ไม่ระบุตำแหน่ง";
+
+    // Format and display join date
+    const joinDate = new Date(this.currentUser.joinDate);
+    const options = { year: "numeric", month: "long" };
+    this.joinDate.textContent = joinDate.toLocaleDateString("th-TH", options);
+
+    // Update counts
+    this.followingCount.textContent =
+      this.currentUser.following.toLocaleString();
+    this.followersCount.textContent =
+      this.currentUser.followers.toLocaleString();
+
+    // Load default tab content
+    this.loadTweetsTab();
+  }
+
+  handleImageUpload(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type and size
+    if (!file.type.startsWith("image/")) {
+      alert("กรุณาอัพโหลดไฟล์รูปภาพเท่านั้น");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
+      alert("ขนาดไฟล์ต้องไม่เกิน 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageUrl = e.target.result;
+      if (type === "avatar") {
+        this.currentUser.avatarUrl = imageUrl;
+        this.profileAvatar.src = imageUrl;
+      } else {
+        this.currentUser.bannerUrl = imageUrl;
+        this.profileBanner.src = imageUrl;
+      }
+      this.saveUserData();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  handleProfileUpdate(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this.editProfileForm);
+    const updates = {
+      name: formData.get("editName"),
+      bio: formData.get("editBio"),
+      location: formData.get("editLocation"),
+    };
+
+    // Validate input lengths
+    if (updates.name.length > 50) {
+      alert("ชื่อต้องไม่เกิน 50 ตัวอักษร");
+      return;
+    }
+    if (updates.bio.length > 160) {
+      alert("ชีวประวัติต้องไม่เกิน 160 ตัวอักษร");
+      return;
+    }
+    if (updates.location.length > 30) {
+      alert("ตำแหน่งต้องไม่เกิน 30 ตัวอักษร");
+      return;
+    }
+
+    // Update user data
+    Object.assign(this.currentUser, updates);
+    this.saveUserData();
+    this.updateProfileUI();
+    this.closeEditProfileModal();
+  }
+
+  openEditProfileModal() {
+    // Populate form with current values
+    const form = this.editProfileForm;
+    form.elements.editName.value = this.currentUser.name;
+    form.elements.editBio.value = this.currentUser.bio;
+    form.elements.editLocation.value = this.currentUser.location;
+
+    // Update character counts
+    Array.from(form.elements).forEach((element) => {
+      if (
+        element.type === "text" ||
+        element.tagName.toLowerCase() === "textarea"
+      ) {
+        this.updateCharacterCount(element);
+      }
+    });
+
+    this.editProfileModal.style.display = "block";
+  }
+
+  closeEditProfileModal() {
+    this.editProfileModal.style.display = "none";
+  }
+
+  updateCharacterCount(input) {
+    const maxLength = input.maxLength;
+    const currentLength = input.value.length;
+    const counterElement =
+      input.parentElement.querySelector(".character-count");
+    if (counterElement) {
+      counterElement.textContent = `${currentLength}/${maxLength}`;
+      counterElement.style.color =
+        currentLength >= maxLength ? "red" : "#536471";
+    }
+  }
+
+  switchTab(selectedTab) {
+    // Update active tab styling
+    this.contentTabs.forEach((tab) => {
+      tab.classList.remove("active");
+    });
+    selectedTab.classList.add("active");
+
+    // Load appropriate content
+    const tabType = selectedTab.dataset.tab;
+    switch (tabType) {
+      case "tweets":
+        this.loadTweetsTab();
+        break;
+      case "replies":
+        this.loadRepliesTab();
+        break;
+      case "media":
+        this.loadMediaTab();
+        break;
+      case "likes":
+        this.loadLikesTab();
+        break;
+    }
+  }
+
+  loadTweetsTab() {
+    this.userTweets.innerHTML = "";
+    if (this.currentUser.tweets.length === 0) {
+      this.showEmptyState("ยังไม่มีทวีต");
+      return;
+    }
+    this.currentUser.tweets.forEach((tweet) => this.renderTweet(tweet));
+  }
+
+  loadRepliesTab() {
+    this.userTweets.innerHTML = "";
+    if (this.currentUser.replies.length === 0) {
+      this.showEmptyState("ยังไม่มีการตอบกลับ");
+      return;
+    }
+    this.currentUser.replies.forEach((reply) => this.renderTweet(reply, true));
+  }
+
+  loadMediaTab() {
+    this.userTweets.innerHTML = "";
+    if (this.currentUser.media.length === 0) {
+      this.showEmptyState("ยังไม่มีสื่อ");
+      return;
+    }
+    this.renderMediaGrid(this.currentUser.media);
+  }
+
+  loadLikesTab() {
+    this.userTweets.innerHTML = "";
+    if (this.currentUser.likes.length === 0) {
+      this.showEmptyState("ยังไม่มีทวีตที่ถูกใจ");
+      return;
+    }
+    this.currentUser.likes.forEach((tweet) => this.renderTweet(tweet));
+  }
+
+  showEmptyState(message) {
+    this.userTweets.innerHTML = `
+          <div class="empty-state">
+              <i class="far fa-comment-alt"></i>
+              <p>${message}</p>
+          </div>
+      `;
+  }
+
+  renderTweet(tweet, isReply = false) {
+    const tweetElement = document.createElement("div");
+    tweetElement.className = "tweet";
+    if (isReply) {
+      tweetElement.classList.add("tweet-reply");
+    }
+
+    tweetElement.innerHTML = `
+          <div class="avatar">
+              <img src="${
+                this.currentUser.avatarUrl || "default-avatar.jpg"
+              }" alt="Profile Avatar">
+          </div>
+          <div class="tweet-content">
+              <div class="tweet-header">
+                  <span class="tweet-name">${this.currentUser.name}</span>
+                  <span class="tweet-username">@${
+                    this.currentUser.username
+                  }</span>
+                  <span class="tweet-time">· ${this.formatDate(
+                    tweet.timestamp
+                  )}</span>
+              </div>
+              ${
+                isReply
+                  ? `<div class="reply-to">ตอบกลับ @${tweet.replyTo}</div>`
+                  : ""
+              }
+              <div class="tweet-text">${this.formatTweetContent(
+                tweet.content
+              )}</div>
+              ${
+                tweet.media
+                  ? `<div class="tweet-media"><img src="${tweet.media}" alt="Tweet media"></div>`
+                  : ""
+              }
+              <div class="tweet-actions">
+                  <button class="tweet-action reply"><i class="far fa-comment"></i> ${
+                    tweet.replies || 0
+                  }</button>
+                  <button class="tweet-action retweet"><i class="fas fa-retweet"></i> ${
+                    tweet.retweets || 0
+                  }</button>
+                  <button class="tweet-action like"><i class="far fa-heart"></i> ${
+                    tweet.likes || 0
+                  }</button>
+                  <button class="tweet-action share"><i class="far fa-share-square"></i></button>
+              </div>
+          </div>
+      `;
+
+    this.userTweets.appendChild(tweetElement);
+  }
+
+  renderMediaGrid(mediaItems) {
+    const gridContainer = document.createElement("div");
+    gridContainer.className = "media-grid";
+
+    mediaItems.forEach((media) => {
+      const mediaElement = document.createElement("div");
+      mediaElement.className = "media-item";
+      mediaElement.innerHTML = `<img src="${media.url}" alt="Media content">`;
+      gridContainer.appendChild(mediaElement);
+    });
+
+    this.userTweets.appendChild(gridContainer);
+  }
+
+  formatDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = (now - date) / 1000; // difference in seconds
+
+    if (diff < 60) return "เมื่อสักครู่";
+    if (diff < 3600) return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} ชั่วโมงที่แล้ว`;
+    return date.toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  formatTweetContent(content) {
+    return content
+      .replace(/@(\w+)/g, '<span class="mention">@$1</span>')
+      .replace(/#(\w+)/g, '<span class="hashtag">#$1</span>')
+      .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+  }
+}
+
+// Initialize the profile manager when the document is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const profileManager = new ProfileManager();
+});
